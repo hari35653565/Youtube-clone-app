@@ -4,19 +4,38 @@ on:
     branches:
       - main
   pull_request:
-      types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened]
 
-name: Main Workflow 
+name: SonarQube Scan
+
 jobs:
-  sonarqube:
+  sonarqube-check1:
+    name: SonarQube Trigger 1
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        # Disabling shallow clones is recommended for improving the relevancy of reporting
-        fetch-depth: 0
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: Checking out
+        uses: actions/checkout@master
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - name: SonarQube Check 1
+        uses: kitabisa/sonarqube-action@v1.2.0
+        with:
+          host: ${{ secrets.SONARQUBE_HOST }}
+          login: ${{ secrets.SONARQUBE_TOKEN }}
+
+  sonarqube-check2:
+    name: SonarQube Trigger 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checking out
+        uses: actions/checkout@v3
+        with:
+          # Disabling shallow clones is recommended for improving the relevancy of reporting
+          fetch-depth: 0
+      - name: SonarQube Check 2
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          # Additional options for syntax error checking (if available)
